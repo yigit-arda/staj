@@ -791,3 +791,26 @@ if __name__ == "__main__":
     window = TerminalApp()
     window.show()
     sys.exit(app.exec())
+
+
+
+
+
+
+#functions.py
+
+def Function_1(data_list):
+    """
+    Gelen tüm verileri aralarına '|' işareti koyarak birleştirir.
+    Main kodu bu işareti görerek verileri kadranda sırayla oynatacaktır.
+    """
+    if not data_list or len(data_list) == 0:
+        return "0"
+    
+    # Tüm elemanları temizleyip birleştiriyoruz. Örn: ['500', '800', '1050'] -> "500|800|1050"
+    return "|".join([v.strip() for v in data_list])
+
+
+
+def Function_2(data_list):
+    return f"Function 2 is selected"
