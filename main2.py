@@ -814,3 +814,82 @@ def Function_1(data_list):
 
 def Function_2(data_list):
     return f"Function 2 is selected"
+
+
+
+
+
+
+def parse_and_display(self, line):
+        clean = line.replace('\0', '').strip()
+        if not clean: return
+        
+        parts = [p.strip() for p in clean.split(',')]
+        length = len(parts)
+
+        if length < 3: return
+        if parts[0] != "iy" or parts[-1] != "ky": return
+            
+        current_node_id = self.convert_to_decimal(parts[1])
+        current_msg_id = self.convert_to_decimal(parts[2])
+
+        doesDataExist = length >= 5
+        data_list = parts[3:-1] if doesDataExist else []
+        data_str = ", ".join(data_list) if doesDataExist else "NO DATA"
+
+        is_filtered_out = False
+
+        if self.active_filters:
+            match_found = False
+            has_enabled_filter = False
+
+            for f_obj in self.active_filters:
+                if not f_obj['is_active']:
+                    continue  
+                
+                has_enabled_filter = True
+                
+                node_match = (f_obj['node_id'] == current_node_id) if f_obj['node_id'] else True
+                msg_match = (f_obj['msg_id'] == current_msg_id) if f_obj['msg_id'] else True
+                
+                if node_match and msg_match:
+                    match_found = True
+                    # ❌ ESKİ SATIR: f_obj['display_bar'].update_live_data(data_list)
+                    
+                    # ✅ YENİ MANTIK: Veriyi ekrana basma, sadece bu filtre için hafızaya yaz/güncelle
+                    filter_key = f"{f_obj['node_id']}_{f_obj['msg_id']}"
+                    self.latest_live_data[filter_key] = data_list
+
+            if has_enabled_filter and not match_found:
+                is_filtered_out = True
+
+        self.write_to_log(current_node_id, current_msg_id, data_list, is_filtered_out)
+
+        if is_filtered_out:
+            return
+
+        self.ui.plainTextEdit.appendPlainText(f"[{datetime.now().strftime('%H:%M:%S')}] Node: {current_node_id}, MSG: {current_msg_id}, Data: [{data_str}]")
+
+
+def render_latest_data(self):
+        """
+        Saniyede 30 kere tetiklenir. Seri port ne kadar hızlı akarsa aksın, 
+        arayüzü sadece insan gözünün algılayabileceği 30 FPS hızında günceller.
+        """
+        if not self.latest_live_data:
+            return
+
+        # Aktif filtreleri dön ve hafızada onlara ait yeni veri var mı bak
+        for f_obj in self.active_filters:
+            if not f_obj['is_active']:
+                continue
+
+            filter_key = f"{f_obj['node_id']}_{f_obj['msg_id']}"
+            
+            # Eğer bu filtreye ait yeni bir veri akışı olmuşsa çizimi tetikle
+            if filter_key in self.latest_live_data:
+                data_to_display = self.latest_live_data[filter_key]
+                f_obj['display_bar'].update_live_data(data_to_display)
+        
+        # Arayüze basma işlemi bittiği için hafızayı temizliyoruz, yeni verileri bekliyoruz
+        self.latest_live_data.clear()
