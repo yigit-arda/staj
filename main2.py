@@ -893,3 +893,31 @@ def render_latest_data(self):
         
         # Arayüze basma işlemi bittiği için hafızayı temizliyoruz, yeni verileri bekliyoruz
         self.latest_live_data.clear()
+
+
+
+'''
+import indicator_widgets
+## type, minVal, maxVal
+servoGauge_1 = indicator_widgets("gauge",-10,+10) 
+servoGauge_2 = indicator_widgets("gauge",-15,+15)
+speedometer = indicator_widgets("speedometer",0,+50)
+thermometer =  indicator_widgets("thermometer",-10,40)
+altitude = indicator_widgets("altitude",0,3000)
+sensor1 = indicator_widgets("artificial_horizon",-100,100,-100,100)
+
+
+
+indicatorsList = [ 
+    ["servoValues",servoGauge_1,"gauge",None,None],
+    ["lineValues","artificial_horizon_x","artificial_horizon_y",None]
+]
+
+
+def lineValues(data_list):
+    return ["x","87.5","y","15.87","z","3.56"]
+
+def servoValues(data_list):
+
+    return ["pos","3.15","setPt","3.30","srvStatus","1","sensorStatus","0"]
+'''
