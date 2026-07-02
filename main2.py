@@ -1532,8 +1532,7 @@ sensor1 = indicator_widgets("artificial_horizon",-100,100,-100,100)
 
 
 indicatorsList = [ 
-    ["servoValues",servoGauge_1,"gauge",None,None],
-    ["lineValues","artificial_horizon_x","artificial_horizon_y",None]
+    ["servoValues","gauge","gauge",None,None]
 ]
 
 
