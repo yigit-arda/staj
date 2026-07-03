@@ -149,7 +149,11 @@ class GaugeWidget(QWidget):
         # Yazıyı widget'ın tam ortasına hizalıyoruz
         text_rect = QRectF(0, 0, width, height)
 
+        
+        
 
+ # İstersen "{self.value:.2f}" kısmını ".1f" yaparak tek ondalığa düşürebilirsin
+        painter.drawText(text_rect, Qt.AlignmentFlag.AlignCenter, f"{self.value:.2f}")
 '''
 
 import math
@@ -243,5 +247,3 @@ class GaugeWidget(QWidget):
 
 
         
-        # İstersen "{self.value:.2f}" kısmını ".1f" yaparak tek ondalığa düşürebilirsin
-        painter.drawText(text_rect, Qt.AlignmentFlag.AlignCenter, f"{self.value:.2f}")
