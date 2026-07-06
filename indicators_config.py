@@ -43,3 +43,5 @@ indicatorsList = [
     ["servoAndTemp", "servoPos",       servoGauge_1,     "Servo Pos"],
     ["servoAndTemp", "ambientTemp",    thermometer_ind,  "Ambient Temp"],
 ]
+
+FUNCTION_DISPLAY_NAMES = {}
