@@ -1,3 +1,43 @@
+
+
+
+
+
+Screen 0: minimum 16 x 16, current 1024 x 768, maximum 32767 x 32767
+HDMI-A-1 connected 1024x768+0+0 (normal left inverted right x axis y axis) 0mm x 0mm
+   1024x768      59.92*+
+   800x600       59.86  
+   640x480       59.38  
+   320x240       59.29  
+   960x600       59.63  
+   928x580       59.88  
+   800x500       59.50  
+   768x480       59.90  
+   720x480       59.71  
+   640x400       59.95  
+   320x200       58.14  
+   1024x576      59.90  
+   864x486       59.92  
+   720x400       59.27  
+   640x350       59.28  
+lease-HDMI-A-1 disconnected (normal left inverted right x axis y axis)
+   1024x768      60.00 +
+   800x600       60.32    56.25  
+   848x480       60.00  
+   640x480       59.94  
+
+
+
+
+
+
+
+
+
+
+
+
+
 import os
 
 from PySide6.QtWidgets import QWidget 
