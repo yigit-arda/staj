@@ -2,63 +2,6 @@
 
 
 
-HDMI-A-1 connected 1024x768+0+0 (0x23) normal (normal left inverted right x axis y axis) 0mm x 0mm
-	Identifier: 0x21
-	Timestamp:  640394
-	Subpixel:   unknown
-	Gamma:      1.0:1.0:1.0
-	Brightness: 0.0
-	Clones:    
-	CRTC:       0
-	CRTCs:      0
-	Transform:  1.000000 0.000000 0.000000
-	            0.000000 1.000000 0.000000
-	            0.000000 0.000000 1.000000
-	           filter: 
-	RANDR Emulation: 1 
-	non-desktop: 0 
-		supported: 0, 1
-  1024x768 (0x23) 63.500MHz -HSync +VSync *current +preferred
-        h: width  1024 start 1072 end 1176 total 1328 skew    0 clock  47.82KHz
-        v: height  768 start  771 end  775 total  798           clock  59.92Hz
-  800x600 (0x24) 38.250MHz -HSync +VSync
-        h: width   800 start  832 end  912 total 1024 skew    0 clock  37.35KHz
---
-lease-HDMI-A-1 disconnected (normal left inverted right x axis y axis)
-	Identifier: 0x1cc
-	Timestamp:  640394
-	Subpixel:   unknown
-	Clones:    
-	CRTCs:      1
-	Transform:  1.000000 0.000000 0.000000
-	            0.000000 1.000000 0.000000
-	            0.000000 0.000000 1.000000
-	           filter: 
-	CONNECTOR_ID: 35 
-		supported: 35
-	non-desktop: 1 
-		supported: 0, 1
-  1024x768 (0x1cd) 65.000MHz -HSync -VSync +preferred
-        h: width  1024 start 1048 end 1184 total 1344 skew    0 clock  48.36KHz
-        v: height  768 start  771 end  777 total  806           clock  60.00Hz
-  800x600 (0x1ce) 40.000MHz +HSync +VSync
-        h: width   800 start  840 end  968 total 1056 skew    0 clock  37.88KHz
-        v: height  600 start  601 end  605 total  628           clock  60.32Hz
-  800x600 (0x1cf) 36.000MHz +HSync +VSync
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import os
 
 from PySide6.QtWidgets import QWidget 
