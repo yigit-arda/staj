@@ -1,0 +1,38 @@
+========================================================================
+CHANGELOG - IVCANSniffer Project
+========================================================================
+
+All notable changes to the IVCANSniffer project are documented in this file.
+This project adheres to Semantic Versioning (v2.0.0).
+
+------------------------------------------------------------------------
+[1.0.0] - 2026-07-06
+------------------------------------------------------------------------
+
+ADDED:
+* Real-Time Telemetry Dashboard: Initial release of the PySide6 based 
+  GUI for serial data visualization.
+* Flight Dynamics Parsers: Implemented 'flightStatus' function to 
+  calculate and map speed, temperature, altitude, and roll angle from 
+  raw serial data.
+* Servo & Ambient Parsers: Implemented 'servoAndTemp' function to map 
+  servo motor positions and ambient temperature.
+* Custom UI Widgets: Added 360-degree gauge and odometer components to 
+  visualize 'roll' and 'spd' data continuously.
+* Fail-Safe Mechanism: Created '_safe_get' helper function to prevent 
+  IndexError crashes when incomplete data packets are received from 
+  the serial port.
+* Auto-Centering Logic: Programmed gauges (like roll and servo position) 
+  to safely default to a center position (0.0) automatically if the 
+  serial signal is lost or interrupted.
+
+CHANGED:
+* Refactored raw sensor data conversion formulas (e.g., applying a 
+  0.005 multiplier and -10 offset for temperature) to display true 
+  physical units on the dashboard.
+
+FIXED:
+* Resolved the critical issue where missing serial data would cause 
+  the main application thread to freeze or crash.
+
+========================================================================
