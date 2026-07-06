@@ -64,3 +64,24 @@ python3 ui_main.py
 ```bash
 python ui_main.py
 ```
+## 📦 Building the Executable (.exe) for Windows
+
+If you want to compile the Python source code into a standalone Windows executable, follow these release steps:
+
+### 1. Update the Version Title
+Before building, open `ui_main.py` and update the window title to reflect your new version number:
+```python
+self.setWindowTitle("IVCANSniffer-v1.x.x")
+```
+
+### 2. Clean Previous Build Artifacts
+To prevent conflicts and oversized files, delete any existing `build/` folder, `dist/` folder, and `.spec` files from your project's root directory.
+
+### 3. Run PyInstaller
+Ensure your virtual environment `(venv)` is activated, then run the following command to generate the executable:
+```bash
+pyinstaller --onefile --windowed --name "IVCANSniffer_v1.x.x" ui_main.py
+```
+*(Remember to replace `v1.x.x` with your actual version number).*
+
+Once the process completes successfully, your new standalone executable will be located inside the newly generated `dist/` folder.
