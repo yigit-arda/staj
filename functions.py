@@ -1,192 +1,15 @@
-# functions.py
-"""
-Her fonksiyon, ham data_list'i (seri porttan gelen string parçaları)
-işleyip anlamlı isimlerle (key) bir dict döndürür. Hangi key'in hangi
-göstergeye/etikete gideceği artık burada değil, indicators_config.py
-içindeki indicatorsList'te tanımlıdır.
-"""
-'''
-
-def servoValues(data_list):
-    # TODO: gerçek parse mantığı data_list'in formatına göre yazılacak.
-    # Şimdilik hocanın verdiği örnek sabit değerlerle iskelet:
-    if not data_list:
-        return {"pos": 0, "setPt": 0, "srvStatus": 0, "sensorStatus": 0}
-
-    return {
-        "pos": float(data_list[0]) if len(data_list) > 0 else 0,
-        "setPt": float(data_list[1]) if len(data_list) > 1 else 0,
-        "srvStatus": data_list[2] if len(data_list) > 2 else "0",
-        "sensorStatus": data_list[3] if len(data_list) > 3 else "0",
-    }
-
-
-def speedValues(data_list):
-    if not data_list:
-        return {"speed": 0}
-    return {"speed": float(data_list[0]) * 0.005}
-
-
-def tempValues(data_list):
-    if not data_list:
-        return {"temp": 0}
-    return {"temp": (float(data_list[0]) * 0.005) - 10}
-
-
-def altValues(data_list):
-    if not data_list:
-        return {"alt": 0}
-    return {"alt": float(data_list[0])}
-    
-
-# --- FARKLI TİPLERİ AYNI ANDA GETİREN FONKSİYON ÖRNEKLERİ ---
-# Tek fonksiyon, birden fazla FARKLI tip widget'ı aynı anda besleyebilir.
-# indicators_config.py'de aynı fonksiyon adına birden fazla satır tanımlayarak
-# hangi key'in hangi widget'a (hangi tipte olursa olsun) gideceğini eşliyoruz.
-
-def flightStatus(data_list):
-    """Hız + sıcaklık + irtifa + bir gauge + iki metin durumu aynı anda."""
-    if not data_list:
-        return {"spd": 0, "tmp": 0, "alt": 0, "roll": 0, "engineStatus": "0", "gpsStatus": "0"}
-
-    def _f(idx, default=0.0):
-        try:
-            return float(data_list[idx])
-        except (IndexError, ValueError):
-            return default
-
-    return {
-        "spd": _f(0) * 0.005,           # -> speedometer
-        "tmp": (_f(1) * 0.005) - 10,    # -> thermometer
-        "alt": _f(2),                   # -> altitude bar
-        "roll": _f(3),                  # -> gauge (-15..15 gibi)
-        "engineStatus": data_list[4] if len(data_list) > 4 else "0",   # -> düz metin
-        "gpsStatus": data_list[5] if len(data_list) > 5 else "0",      # -> düz metin
-    }
-
-
-def servoAndTemp(data_list):
-    """Servo pozisyonu (gauge) + ortam sıcaklığı (thermometer) birlikte."""
-    if not data_list:
-        return {"servoPos": 0, "ambientTemp": 0}
-
-    def _f(idx, default=0.0):
-        try:
-            return float(data_list[idx])
-        except (IndexError, ValueError):
-            return default
-
-    return {
-        "servoPos": _f(0),
-        "ambientTemp": (_f(1) * 0.01) - 10, 
-    }
-
-    '''
-
-
-# functions.py
-"""
-Her fonksiyon, ham data_list'i (seri porttan gelen string parçaları)
-işleyip anlamlı isimlerle (key) bir dict döndürür. Hangi key'in hangi
-göstergeye/etikete gideceği artık burada değil, indicators_config.py
-içindeki indicatorsList'te tanımlıdır.
-"""
-
-'''
-def servoValues(data_list):
-    # TODO: gerçek parse mantığı data_list'in formatına göre yazılacak.
-    # Şimdilik hocanın verdiği örnek sabit değerlerle iskelet:
-    if not data_list:
-        return {"pos": 0, "setPt": 0, "srvStatus": 0, "sensorStatus": 0}
-
-    return {
-        "pos": float(data_list[0]) if len(data_list) > 0 else 0,
-        "setPt": float(data_list[1]) if len(data_list) > 1 else 0,
-        "srvStatus": data_list[2] if len(data_list) > 2 else "0",
-        "sensorStatus": data_list[3] if len(data_list) > 3 else "0",
-    }
-
-
-def speedValues(data_list):
-    if not data_list:
-        return {"speed": 0}
-    return {"speed": round(float(data_list[0]) * 0.005,2)}
-
-
-def tempValues(data_list):
-    if not data_list:
-        return {"temp": 0}
-    return {"temp": round((float(data_list[0]) * 0.005) - 10,2)}
-
-
-def altValues(data_list):
-    if not data_list:
-        return {"alt": 0}
-    return {"alt":  float(data_list[0])}
-    
-
-# --- FARKLI TİPLERİ AYNI ANDA GETİREN FONKSİYON ÖRNEKLERİ ---
-# Tek fonksiyon, birden fazla FARKLI tip widget'ı aynı anda besleyebilir.
-# indicators_config.py'de aynı fonksiyon adına birden fazla satır tanımlayarak
-# hangi key'in hangi widget'a (hangi tipte olursa olsun) gideceğini eşliyoruz.
-
-def flightStatus(data_list):
-    """Hız + sıcaklık + irtifa + bir gauge + iki metin durumu aynı anda."""
-    if not data_list:
-        return {"spd": 0, "tmp": 0, "alt": 0, "roll": 0, "engineStatus": "0", "gpsStatus": "0"}
-
-    def _f(idx, default=0.0):
-        try:
-            return float(data_list[idx])
-        except (IndexError, ValueError):
-            return default
-
-    return {
-        "spd": _f(0) * 0.005,           # -> speedometer
-        "tmp": (_f(1) * 0.005) - 10,    # -> thermometer
-        "alt": _f(2),                   # -> altitude bar
-        "roll": _f(3),                  # -> gauge (-15..15 gibi)
-        "engineStatus": data_list[4] if len(data_list) > 4 else "0",   # -> düz metin
-        "gpsStatus": data_list[5] if len(data_list) > 5 else "0",      # -> düz metin
-    }
-
-
-def servoAndTemp(data_list):
-    """Servo pozisyonu (gauge) + ortam sıcaklığı (thermometer) birlikte."""
-    if not data_list:
-        return {"servoPos": 0, "ambientTemp": 0}
-
-    def _f(idx, default=0.0):
-        try:
-            return float(data_list[idx])
-        except (IndexError, ValueError):
-            return default
-
-    return {
-        "servoPos": _f(0),
-        "ambientTemp": (_f(1) * 0.01) - 10, 
-    }
-
-
-
-    '''
-
-# functions.py
-"""
-Her fonksiyon, ham data_list'i (seri porttan gelen string parçaları)
-işleyip anlamlı isimlerle (key) bir dict döndürür. Hangi key'in hangi
-göstergeye/etikete gideceği artık burada değil, indicators_config.py
-içindeki indicatorsList'te tanımlıdır.
-
-Sayısal değerler burada FLOAT olarak döndürülür (string değil) -
-ondalık basamak formatlaması (örn. "%.2f") display_bar.py'de,
-tek bir yerden yapılır. Böylece bu katman sade veri üretir,
-gösterim detayına karışmaz.
-"""
-
-
 def _safe_get(data_list, index, default=0.0):
-    """Listeden veriyi güvenli şekilde float olarak çeker; index yoksa/bozuksa default döner."""
+    """Safely extracts a value from a list at a given index and converts it to float.
+
+    Args:
+        data_list (list): The source list containing raw data strings or numbers.
+        index (int): The target index position to access.
+        default (float, optional): Fallback value if an index error or conversion 
+            error occurs. Defaults to 0.0.
+
+    Returns:
+        float: The extracted float value, or the default value upon failure.
+    """
     try:
         return float(data_list[index])
     except (IndexError, ValueError):
@@ -194,16 +17,29 @@ def _safe_get(data_list, index, default=0.0):
 
 
 def servoValues(data_list):
+    """Parses servo position, setpoint, and status values from raw telemetry data.
+
+    Maps the 0-10000 raw input range onto specific coordinate boundaries tailored 
+    for visualization components.
+
+    Args:
+        data_list (list): Raw telemetry fields where index 0 is position, index 1 
+            is setpoint, index 2 is servo status, and index 3 is sensor status.
+
+    Returns:
+        dict: Parsed telemetry packet containing mapped position, setpoint, 
+            and status string indicators.
+    """
     if not data_list:
         return {"pos": 0.0, "setPt": 0.0, "srvStatus": "0", "sensorStatus": "0"}
 
-    # Veri gelmezse gauge'lar uca değil ortaya (0'a) düşsün diye default=5000.0
+    # Use 5000.0 as default so gauges center themselves at 0.0 if data is missing
     raw_pos = _safe_get(data_list, 0, default=5000.0)
     raw_setpt = _safe_get(data_list, 1, default=5000.0)
 
-    # pos: ham 0-10000 aralığını -> -10..+10 aralığına çeviriyoruz
+    # Map raw 0-10000 range to a physical range of -10.0 to +10.0
     mapped_pos = round((raw_pos * 0.002) - 10.0, 2)
-    # setPt: ham 0-10000 aralığını -> -15..+15 aralığına çeviriyoruz
+    # Map raw 0-10000 range to a physical range of -15.0 to +15.0
     mapped_setpt = round((raw_setpt * 0.003) - 15.0, 2)
 
     return {
@@ -215,31 +51,64 @@ def servoValues(data_list):
 
 
 def speedValues(data_list):
+    """Extracts and scales speed information from telemetry data.
+
+    Args:
+        data_list (list): Raw telemetry fields where index 0 is raw speed.
+
+    Returns:
+        dict: Dictionary containing the scaled speed value under the key 'speed'.
+    """
     if not data_list:
         return {"speed": 0.0}
     return {"speed": round(_safe_get(data_list, 0) * 0.005, 2)}
 
 
 def tempValues(data_list):
+    """Extracts and scales temperature metrics from telemetry data.
+
+    Args:
+        data_list (list): Raw telemetry fields where index 0 is raw temperature.
+
+    Returns:
+        dict: Dictionary containing the scaled temperature value under the key 'temp'.
+    """
     if not data_list:
         return {"temp": 0.0}
     return {"temp": round((_safe_get(data_list, 0) * 0.005) - 10, 2)}
 
 
 def altValues(data_list):
+    """Extracts and formats altitude readings from telemetry data.
+
+    Args:
+        data_list (list): Raw telemetry fields where index 0 is raw altitude.
+
+    Returns:
+        dict: Dictionary containing the formatted altitude value under the key 'alt'.
+    """
     if not data_list:
         return {"alt": 0.0}
     return {"alt": round(_safe_get(data_list, 0), 2)}
 
 
-# --- FARKLI TİPLERİ AYNI ANDA GETİREN FONKSİYONLAR ---
-
 def flightStatus(data_list):
-    """Hız + sıcaklık + irtifa + bir gauge + iki metin durumu aynı anda."""
+    """Extracts combined flight metrics including speed, temperature, altitude, and status codes.
+
+    Processes multiple instrument parameters packed within a single telemetry frame.
+
+    Args:
+        data_list (list): Raw sequence fields mapped as: index 0 (speed), 
+            index 1 (temp), index 2 (altitude), index 3 (roll), index 4 (engine), 
+            and index 5 (gps).
+
+    Returns:
+        dict: A comprehensive overview dictionary containing scaled metrics and status keys.
+    """
     if not data_list:
         return {"spd": 0.0, "tmp": 0.0, "alt": 0.0, "roll": 0.0, "engineStatus": "0", "gpsStatus": "0"}
 
-    # roll bir gauge olduğu için veri gelmezse ortada (0'da) dursun diye default=5000.0
+    # Use 5000.0 as default so gauge centers itself at 0.0 if data is missing
     raw_roll = _safe_get(data_list, 3, default=5000.0)
     mapped_roll = round((raw_roll * 0.003) - 15.0, 2)
 
@@ -254,18 +123,54 @@ def flightStatus(data_list):
 
 
 def servoAndTemp(data_list):
-    """Servo pozisyonu (gauge) + ortam sıcaklığı (thermometer) birlikte."""
+    """Extracts a combined payload dataset for servo positioning and ambient temperature.
+
+    Args:
+        data_list (list): Raw telemetry fields where index 0 is raw servo position 
+            and index 1 is raw ambient temperature.
+
+    Returns:
+        dict: Parsed dictionary containing 'servoPos' and 'ambientTemp' keys.
+    """
     if not data_list:
         return {"servoPos": 0.0, "ambientTemp": 0.0}
 
-    # servoPos bir gauge olduğu için veri gelmezse ortada (0'da) dursun diye default=5000.0
+    # Use 5000.0 as default so gauge centers itself at 0.0 if data is missing
     raw_pos = _safe_get(data_list, 0, default=5000.0)
     mapped_pos = round((raw_pos * 0.002) - 10.0, 2)
 
-    # NOT: tempValues ile aynı katsayıyı (0.005) kullandım - gerçek donanımına göre kontrol et.
+    # Convert raw data into temperature metric using a standard 0.005 scaling coefficient
     ambient_temp = round((_safe_get(data_list, 1) * 0.005) - 10, 2)
 
     return {
         "servoPos": mapped_pos,
         "ambientTemp": ambient_temp,
+    }
+
+def attitudeValues(data_list):
+    """Parses and scales pitch and roll data for the artificial horizon indicator.
+
+    Extracts raw orientation metrics from the telemetry payload, applies a scaling 
+    transformation to map the values to a physical degree range, and packs them 
+    into a single tuple for the widget to unpack.
+
+    Args:
+        data_list (list): Raw telemetry fields where index 0 is the raw pitch 
+            value and index 1 is the raw roll value.
+
+    Returns:
+        dict: A dictionary containing a tuple of scaled (pitch, roll) values 
+            under the key 'attitude'.
+    """
+    if not data_list or len(data_list) < 2:
+        return {"attitude": (0.0, 0.0)} 
+
+    raw_pitch = _safe_get(data_list, 0, default=5000.0) 
+    mapped_pitch = round((raw_pitch * 0.006 - 30), 2)
+    
+    raw_roll = _safe_get(data_list, 1, default=5000.0)
+    mapped_roll = round((raw_roll * 0.006 - 30), 2)
+
+    return {
+        "attitude": (mapped_pitch, mapped_roll)
     }
