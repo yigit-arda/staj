@@ -14,8 +14,20 @@ from PySide6.QtSerialPort import QSerialPort, QSerialPortInfo
 from widgets.display_bar import DisplayBarWidget
 from widgets.filter_widget import FilterWidget
 
+
+startString = 'iy'
+endString = 'ky'
+
+
 class Ui_MainWindow(object):
+    """Auto-generated UI class for the MainWindow."""
     def setupUi(self, MainWindow):
+        """Sets up the user interface for the main window.
+
+        Args:
+            MainWindow (QMainWindow): The main window instance to be configured.
+        """
+
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(1200, 750)
@@ -93,7 +105,12 @@ class Ui_MainWindow(object):
         QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Innovita Terminal & Aircraft UI", None))
+        """Translates the UI components.
+
+        Args:
+            MainWindow (QMainWindow): The main window instance containing the UI components.
+        """
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"IVCANSniffer-v1.1.0", None))
         self.date.setText(QCoreApplication.translate("MainWindow", u"Date", None))
         self.Refresh.setText(QCoreApplication.translate("MainWindow", u"Refresh", None))
         self.start_stop.setText(QCoreApplication.translate("MainWindow", u"Start", None))
@@ -103,10 +120,46 @@ class Ui_MainWindow(object):
         self.btn_clear_filter.setText(QCoreApplication.translate("MainWindow", u"Clear Filters", None))
             
 class TerminalApp(QMainWindow):
+    """Main application class for the IVCanSniffer terminal.
+
+    Handles serial port communication, data parsing, dynamic filtering,
+    data visualization through custom widgets, and CSV logging.
+    """
+    
     def __init__(self):
+        """Initializes the TerminalApp with its UI, variables, and connections."""
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        
+        
+        
+        self.setStyleSheet("""
+            QMainWindow, QWidget#centralwidget {
+                background-color: #1E1E1E;
+                color: #FFFFFF;
+            }
+            QLabel {
+                color: #FFFFFF;
+            }
+            /* Terminal alanının (QPlainTextEdit) kendisi ve çerçevesi */
+            QPlainTextEdit {
+                background-color: #121212;
+                color: #00FF00;
+                border: 1px solid #333333;
+            }
+            /* Aktif filtrelerin listelendiği sağ paneldeki liste */
+            QListWidget {
+                background-color: #1A1A1A;
+                color: #FFFFFF;
+                border: 1px solid #333333;
+            }
+            /* Filtre barlarının içinde durduğu kaydırma alanı ve içindeki konteyner */
+            QScrollArea, QWidget#display_bars_container {
+                background-color: #121212;
+                border: none;
+            }
+        """)
 
         self.serial_port = QSerialPort(self)
         self.serial_port.readyRead.connect(self.read_serial_data)
@@ -147,7 +200,7 @@ class TerminalApp(QMainWindow):
         self.right_panel_layout.addWidget(self.filter_list_widget)
         self.right_panel_layout.addStretch()
 
-        # === DÜZELTME: GÖRÜNÜM GEÇİŞ BUTONU TANIMLANDI VE EKLEDİ ===
+        
         self.btn_toggle_view = QPushButton("Switch to Terminal", self)
         self.btn_toggle_view.setStyleSheet("background-color: #008CBA; color: white; font-weight: bold; padding: 6px; border-radius: 4px;")
         self.btn_toggle_view.clicked.connect(self.toggle_center_view)
@@ -164,23 +217,24 @@ class TerminalApp(QMainWindow):
         self.center_layout = QVBoxLayout()
         self.center_layout.addWidget(self.ui.widget)
 
-        # === DÜZELTME: SCROLL AREA MANTIĞI TAM TANIMLANDI ===
+        
         self.display_bars_container = QWidget(self)
+        self.display_bars_container.setObjectName("display_bars_container")
         self.display_bars_layout = QVBoxLayout(self.display_bars_container)
         self.display_bars_layout.setContentsMargins(0, 5, 0, 5)
         self.display_bars_layout.setSpacing(5)
-        self.display_bars_layout.setAlignment(Qt.AlignmentFlag.AlignTop) # Yukarı yasla
+        self.display_bars_layout.setAlignment(Qt.AlignmentFlag.AlignTop) 
 
         self.display_scroll_area = QScrollArea(self)
         self.display_scroll_area.setWidgetResizable(True)
         self.display_scroll_area.setWidget(self.display_bars_container)
-        self.display_scroll_area.setStyleSheet("QScrollArea { border: none; background-color: transparent; }")
+        self.display_scroll_area.setStyleSheet("QScrollArea { border: none; background-color:#121212; }")
 
-        # Layout'a hem scroll alanını hem terminali ekliyoruz
+        
         self.center_layout.addWidget(self.display_scroll_area)
         self.center_layout.addWidget(self.ui.plainTextEdit)
 
-        # Başlangıçta sadece display barlar açık, terminal gizli
+        
         self.ui.plainTextEdit.hide()
 
         self.content_layout = QHBoxLayout()
@@ -224,6 +278,8 @@ class TerminalApp(QMainWindow):
         self.ui.btn_clear_filter.clicked.connect(self.clear_filters)
 
     def setup_log_panel(self):
+        """Constructs and configures the logging control panel widget."""
+
         self.log_panel = QFrame(self)
         self.log_panel.setStyleSheet("QFrame { background-color: #E0E0E0; border: 1px solid #999999; border-radius: 5px; }")
         self.log_panel.hide()
@@ -274,6 +330,7 @@ class TerminalApp(QMainWindow):
         layout.addLayout(ctrl_layout)
 
     def toggle_log_panel(self):
+        """Toggles the visibility of the logging side panel."""
         if self.log_panel.isHidden():
             self.log_panel.show()
             self.btn_toggle_log.setText("📂 Close Log Menu")
@@ -282,6 +339,7 @@ class TerminalApp(QMainWindow):
             self.btn_toggle_log.setText("📂 Log Menu")
 
     def toggle_center_view(self):
+        """Switches the central display area between text terminal and widget display bars."""
         if self.ui.plainTextEdit.isHidden():
             self.ui.plainTextEdit.show()
             self.display_scroll_area.hide()
@@ -294,12 +352,14 @@ class TerminalApp(QMainWindow):
             self.btn_toggle_view.setStyleSheet("background-color: #008CBA; color: white; font-weight: bold; padding: 6px; border-radius: 4px;")
 
     def browse_log_folder(self):
+        """Opens a directory dialog for the user to select the log output path."""
         folder = QFileDialog.getExistingDirectory(self, "Select Directory for Logs")
         if folder:
             self.log_folder = folder
             self.le_log_path.setText(folder)
 
     def toggle_logging(self):
+        """Starts or pauses the serial data logging process."""
         if not self.log_folder:
             QMessageBox.warning(self, "Warning", "Please select a folder for log files first.")
             return
@@ -324,6 +384,11 @@ class TerminalApp(QMainWindow):
             self.ui.plainTextEdit.appendPlainText(f"--- LOGGING PAUSED ---")
 
     def check_and_open_log_file(self):
+
+        """Ensures a log file is open and ready to be written. 
+        
+        Creates a new CSV file with headers if it does not already exist.
+        """
         if self.log_file is None or self.log_file.closed:
             filename = f"{self.base_log_name}_{self.current_log_index}.csv"
             filepath = os.path.join(self.log_folder, filename)
@@ -336,6 +401,7 @@ class TerminalApp(QMainWindow):
                 self.log_file.flush()
 
     def finish_logging(self):
+        """Terminates the logging process and finalizes the active log file."""
         self.is_logging = False
         self.btn_log_start_stop.setText("Start")
         self.btn_log_start_stop.setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;")
@@ -351,6 +417,14 @@ class TerminalApp(QMainWindow):
         self.log_line_count = 0
 
     def write_to_log(self, node_id, msg_id, data_list, is_filtered_out):
+        """Formats and writes parsed serial data into the active CSV log file.
+
+        Args:
+            node_id (str): Decoded node identifier from the CAN frame.
+            msg_id (str): Decoded message identifier.
+            data_list (list): Extracted payload data.
+            is_filtered_out (bool): Flag indicating if the current frame is ignored by active filters.
+        """
         if not self.is_logging:
             return
             
@@ -369,12 +443,23 @@ class TerminalApp(QMainWindow):
         filename = f"{self.base_log_name}_{self.current_log_index}.csv"
         filepath = os.path.join(self.log_folder, filename)
         
+        # Roll over to a new log file if the max file size limit is reached.
         if os.path.exists(filepath) and os.path.getsize(filepath) >= self.MAX_LOG_SIZE:
             self.log_file.close()             
             self.current_log_index += 1       
             self.check_and_open_log_file()    
 
     def eventFilter(self, obj, event):
+        """Intercepts specific events, such as mouse clicks, on input fields.
+
+        Args:
+            obj (QObject): The object that fired the event.
+            event (QEvent): The event structure containing event details.
+
+        Returns:
+            bool: True if the event was handled, otherwise delegates to the parent class.
+        """
+
         if event.type() == QEvent.MouseButtonPress:
             if obj == self.ui.le_node_id:
                 self.node_completer.setCompletionPrefix("")
@@ -385,6 +470,13 @@ class TerminalApp(QMainWindow):
         return super().eventFilter(obj, event)
 
     def update_history(self, new_value, history_list, model):
+        """Updates the completion history for Node ID and Message ID inputs.
+
+        Args:
+            new_value (str): The new value to be added to history.
+            history_list (list): The list tracking historical inputs.
+            model (QStringListModel): The model bound to the QCompleter.
+        """
         if not new_value: return
         if new_value in history_list: history_list.remove(new_value)
         history_list.insert(0, new_value)
@@ -392,20 +484,31 @@ class TerminalApp(QMainWindow):
         model.setStringList(list(history_list))
 
     def update_datetime(self):
+        """Updates the datetime label in the UI to match the current system time."""
         self.ui.date.setText(datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
 
     def refresh_ports(self):
+        """Scans the system for available serial ports and populates the port combobox."""
         self.ui.cb_port.clear()
         self.ui.cb_port.addItem("Select Port")
         for port in QSerialPortInfo.availablePorts():
             self.ui.cb_port.addItem(port.portName())
+            print(port.portName())
+        self.ui.cb_port.addItem("ttyUSB35")
+            
 
     def clear_terminal(self):
+        """Prompts the user and clears all text from the raw data terminal."""
+
         if QMessageBox.question(self, "Refresh", "Are you sure you want to clear the terminal?",
                                 QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
             self.ui.plainTextEdit.clear()
 
     def add_filter(self):
+        """Validates input and creates a new data filter for Node ID and/or MSG ID.
+        
+        Also instantiates the corresponding UI elements (DisplayBarWidget, FilterWidget).
+        """
         node_id_str = self.ui.le_node_id.text().strip()
         msg_id_str = self.ui.le_msg_id.text().strip()
 
@@ -466,6 +569,11 @@ class TerminalApp(QMainWindow):
         self.ui.le_msg_id.clear()
 
     def on_filter_changed(self, triggered_widget):
+        """Handles the toggle event (active/inactive) for a specific filter.
+
+        Args:
+            triggered_widget (FilterWidget): The filter widget that was toggled.
+        """
         for f_obj in self.active_filters:
             if f_obj['filter_widget'] == triggered_widget:
                 f_obj['is_active'] = triggered_widget.is_active
@@ -474,6 +582,11 @@ class TerminalApp(QMainWindow):
         self.ui.plainTextEdit.appendPlainText("--- Filter States Updated ---")
 
     def remove_single_filter(self, triggered_widget):
+        """Removes a specific filter and its associated UI components.
+
+        Args:
+            triggered_widget (FilterWidget): The filter widget requesting deletion.
+        """
         for f_obj in self.active_filters:
             if f_obj['filter_widget'] == triggered_widget:
                 self.display_bars_layout.removeWidget(f_obj['display_bar'])
@@ -487,6 +600,7 @@ class TerminalApp(QMainWindow):
                 break
 
     def clear_filters(self):
+        """Removes all active filters and clears the associated display lists."""
         for f_obj in self.active_filters:
             self.display_bars_layout.removeWidget(f_obj['display_bar'])
             f_obj['display_bar'].deleteLater()
@@ -498,15 +612,16 @@ class TerminalApp(QMainWindow):
         self.ui.plainTextEdit.appendPlainText("--- All Filters Cleared ---")
 
     def toggle_connection(self):
+        """Opens or closes the serial port connection based on the current state."""
         if self.serial_port.isOpen():
             self.serial_port.close()
             self.ui.start_stop.setText("Start")
             self.ui.plainTextEdit.appendPlainText("=== Connection Closed ===")
             
-            # --- STOP'A BASILDIĞINDA GELECEK VERİ AKIŞINI KESEN MOTOR ---
-            self.data_buffer = "" # Tampon temizlenir ki arkada kalan veri parse edilmesin.
+            
+            self.data_buffer = "" 
             for f_obj in self.active_filters:
-                f_obj['display_bar'].stop_playback() # Tüm aktif göstergeler durdurulur.
+                f_obj['display_bar'].stop_playback() 
         else:
             if self.ui.cb_port.currentIndex() == 0 or self.ui.cb_baud.currentIndex() == 0:
                 QMessageBox.warning(self, "Warning", "Select a valid port and baud rate")
@@ -526,6 +641,7 @@ class TerminalApp(QMainWindow):
                 QMessageBox.critical(self, "Error", f"Could not open {port_name}. It might be in use.")
 
     def read_serial_data(self):
+        """Reads incoming bytes from the serial port, appends to buffer, and processes complete lines."""
         raw_data = self.serial_port.readAll().data().decode('utf-8', errors='ignore')
         self.data_buffer += raw_data
 
@@ -534,6 +650,11 @@ class TerminalApp(QMainWindow):
             self.parse_and_display(line)
 
     def parse_and_display(self, line):
+        """Parses a single line of serial data, applies filters, and routes data for display.
+
+        Args:
+            line (str): Raw string received from the serial buffer.
+        """
         clean = line.replace('\0', '').strip()
         
         if not clean: return
@@ -542,7 +663,7 @@ class TerminalApp(QMainWindow):
         length = len(parts)
 
         if length < 3: return
-        if(parts[0] != "iy" or parts[-1] != "ky"): return
+        if(parts[0] != startString or parts[-1] != endString): return
             
         current_node_id = self.convert_to_decimal(parts[1])
         current_msg_id = self.convert_to_decimal(parts[2])
@@ -581,6 +702,14 @@ class TerminalApp(QMainWindow):
         self.ui.plainTextEdit.appendPlainText(f"[{datetime.now().strftime('%H:%M:%S')}] Node: {current_node_id}, MSG: {current_msg_id}, Data: [{data_str}]")
 
     def convert_to_decimal(self, value_str):
+        """Converts hexadecimal strings to their decimal string representation.
+
+        Args:
+            value_str (str): The value string to be parsed.
+
+        Returns:
+            str: Decimal string if parsing is successful, otherwise returns original string.
+        """
         if value_str.lower().startswith("0x"):
             try:
                 return str(int(value_str, 16))
