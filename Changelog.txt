@@ -35,4 +35,17 @@ FIXED:
 * Resolved the critical issue where missing serial data would cause 
   the main application thread to freeze or crash.
 
+------------------------------------------------------------------------
+[1.1.0] - 2026-07-07
+------------------------------------------------------------------------
+
+ADDED: 
+* Artificial Horizon Indicator: Added a new custom QWidget to visualize 
+  dynamic pitch and roll movements with an integrated pitch ladder.
+* Attitude Data Parser: Implemented 'attitudeValues' function in functions.py 
+  to parse, scale, and pack raw pitch and roll data into a single tuple.
+* Data Routing: Updated the indicatorsList registry to seamlessly route 
+  the combined attitude data tuple to the new horizon indicator without 
+  disrupting the single-argument layout loop.
+
 ========================================================================
