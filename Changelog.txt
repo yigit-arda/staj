@@ -6,6 +6,42 @@ All notable changes to the IVCANSniffer project are documented in this file.
 This project adheres to Semantic Versioning (v2.0.0).
 
 ------------------------------------------------------------------------
+[1.2.0] - 2026-07-09
+------------------------------------------------------------------------
+
+ADDED:
+* Binary Payload Parsers: Implemented 'lidar_function' and 'pitot_function' 
+  in functions.py to extract precise telemetry from low-level binary payloads.
+* Struct Decoding: Integrated Python's built-in 'struct' module to unpack 
+  little-endian 32-bit floats and 16-bit unsigned integers directly from 
+  serial byte streams.
+* Robust Type Casting: Added dynamic hex-string-to-byte conversion logic 
+  within the new parsers. This ensures seamless support for both raw byte 
+  arrays and comma-separated hex strings (e.g., "0x41") without altering 
+  the core serial parsing loop.
+* Expanded UI Blueprints: Created 'lidar_alt_ind' (0-100m scale) and 
+  'pitot_speed_ind' (0-250 km/h scale) within indicators_config.py to 
+  accommodate the extended physical measurement ranges of the new sensors.
+
+CHANGED:
+* Data Routing: Updated the 'indicatorsList' registry to successfully route 
+  parsed Lidar distance, Pitot airspeed, and Pitot temperature data to 
+  their respective graphical components on the dashboard.
+
+------------------------------------------------------------------------
+[1.1.0] - 2026-07-07
+------------------------------------------------------------------------
+
+ADDED: 
+* Artificial Horizon Indicator: Added a new custom QWidget to visualize 
+  dynamic pitch and roll movements with an integrated pitch ladder.
+* Attitude Data Parser: Implemented 'attitudeValues' function in functions.py 
+  to parse, scale, and pack raw pitch and roll data into a single tuple.
+* Data Routing: Updated the indicatorsList registry to seamlessly route 
+  the combined attitude data tuple to the new horizon indicator without 
+  disrupting the single-argument layout loop.
+
+------------------------------------------------------------------------
 [1.0.0] - 2026-07-06
 ------------------------------------------------------------------------
 
@@ -34,18 +70,3 @@ CHANGED:
 FIXED:
 * Resolved the critical issue where missing serial data would cause 
   the main application thread to freeze or crash.
-
-------------------------------------------------------------------------
-[1.1.0] - 2026-07-07
-------------------------------------------------------------------------
-
-ADDED: 
-* Artificial Horizon Indicator: Added a new custom QWidget to visualize 
-  dynamic pitch and roll movements with an integrated pitch ladder.
-* Attitude Data Parser: Implemented 'attitudeValues' function in functions.py 
-  to parse, scale, and pack raw pitch and roll data into a single tuple.
-* Data Routing: Updated the indicatorsList registry to seamlessly route 
-  the combined attitude data tuple to the new horizon indicator without 
-  disrupting the single-argument layout loop.
-
-========================================================================
