@@ -1,3 +1,5 @@
+import struct 
+
 def _safe_get(data_list, index, default=0.0):
     """Safely extracts a value from a list at a given index and converts it to float.
 
@@ -174,3 +176,62 @@ def attitudeValues(data_list):
     return {
         "attitude": (mapped_pitch, mapped_roll)
     }
+
+
+def lidar_function(data_list):
+    """Parses and scales Lidar distance from raw telemetry data.
+
+    Supports both raw byte/integer arrays and lists of hexadecimal strings.
+    """
+    if not data_list or len(data_list) < 4:
+        return {"lidar_distance": 0.0}
+
+    try:
+        target_data = data_list[:4]
+        
+        # Check if the data is received as strings (e.g., "0x41" or "41")
+        if isinstance(target_data[0], str):
+            # Convert hex strings to standard integers (0-255)
+            raw_bytes = bytes([int(x, 16) for x in target_data])
+        else:
+            # Directly convert if already pure integers or bytes
+            raw_bytes = bytes(target_data)
+        
+        distance = struct.unpack('<f', raw_bytes)[0]
+        return {"lidar_distance": round(distance, 2)}
+    except Exception:
+        return {"lidar_distance": 0.0}
+    
+def pitot_function(data_list):
+    """Parses airspeed and temperature metrics from raw Pitot telemetry data.
+
+    Supports both raw byte/integer arrays and lists of hexadecimal strings.
+    """
+    if not data_list or len(data_list) < 6:
+        return {"pitot_speed": 0.0, "temperature": 0}
+
+    try:
+        speed_data = data_list[0:4]
+        temp_data = data_list[4:6]
+        
+        # Type check and conversion for speed data
+        if isinstance(speed_data[0], str):
+            speed_bytes = bytes([int(x, 16) for x in speed_data])
+        else:
+            speed_bytes = bytes(speed_data)
+            
+        # Type check and conversion for temperature data
+        if isinstance(temp_data[0], str):
+            temp_bytes = bytes([int(x, 16) for x in temp_data])
+        else:
+            temp_bytes = bytes(temp_data)
+        
+        pitot_speed = struct.unpack('<f', speed_bytes)[0]
+        temperature = struct.unpack('<H', temp_bytes)[0]
+        
+        return {
+            "pitot_speed": round(pitot_speed, 2),
+            "temperature": temperature
+        }
+    except Exception:
+        return {"pitot_speed": 0.0, "temperature": 0}
