@@ -181,57 +181,70 @@ def attitudeValues(data_list):
 def lidar_function(data_list):
     """Parses and scales Lidar distance from raw telemetry data.
 
-    Supports both raw byte/integer arrays and lists of hexadecimal strings.
+    Supports both raw byte/integer arrays and lists of hexadecimal/decimal strings.
     """
     if not data_list or len(data_list) < 4:
         return {"lidar_distance": 0.0}
 
     try:
-        target_data = data_list[:4]
+        # 1. GÜVENLİK DUVARI: İçinde değer olmayan ('') elemanları temizle
+        clean_data = [x for x in data_list if str(x).strip() != '']
         
-        # Check if the data is received as strings (e.g., "0x41" or "41")
+        # Temizlikten sonra elimizde yeterli byte kalmadıysa paketi çöpe at
+        if len(clean_data) < 4:
+            return {"lidar_distance": 0.0}
+
+        target_data = clean_data[0:4]
+        
+        # 2. Akıllı Hex/Decimal dönüşümü
         if isinstance(target_data[0], str):
-            # Convert hex strings to standard integers (0-255)
-            raw_bytes = bytes([int(x, 16) for x in target_data])
+            raw_bytes = bytes([int(x, 16) if 'x' in x.lower() else int(x) for x in target_data])
         else:
-            # Directly convert if already pure integers or bytes
             raw_bytes = bytes(target_data)
         
+        # Little-Endian float dönüşümü
         distance = struct.unpack('<f', raw_bytes)[0]
-        return {"lidar_distance": round(distance, 2)}
-    except Exception:
-        return {"lidar_distance": 0.0}
-    
-def pitot_function(data_list):
-    """Parses airspeed and temperature metrics from raw Pitot telemetry data.
 
-    Supports both raw byte/integer arrays and lists of hexadecimal strings.
-    """
+        return {"lidar_distance": round(distance, 2)}
+    
+    except Exception as e:
+        # raise (çökertme) KOMUTU KALDIRILDI!
+        # Bozuk bir paket gelirse sessizce 0.0 döndür, bir sonraki paketi bekle.
+        # Geliştirici modunda değilsen print'i bile silebilirsin.
+        return {"lidar_distance": -1.0}
+    
+
+def pitot_function(data_list):
+    """Parses airspeed and temperature metrics from raw Pitot telemetry data."""
     if not data_list or len(data_list) < 6:
         return {"pitot_speed": 0.0, "temperature": 0}
 
     try:
+        # [::-1] İPTAL EDİLDİ! Donanımdan nasıl geliyorsa öyle alıyoruz.
         speed_data = data_list[0:4]
         temp_data = data_list[4:6]
         
-        # Type check and conversion for speed data
+        # Hız verisi
         if isinstance(speed_data[0], str):
-            speed_bytes = bytes([int(x, 16) for x in speed_data])
+            speed_bytes = bytes([int(x, 16) if 'x' in x.lower() else int(x) for x in speed_data])
         else:
             speed_bytes = bytes(speed_data)
-            
-        # Type check and conversion for temperature data
+
+        # Sıcaklık verisi
         if isinstance(temp_data[0], str):
-            temp_bytes = bytes([int(x, 16) for x in temp_data])
+            temp_bytes = bytes([int(x, 16) if 'x' in x.lower() else int(x) for x in temp_data])
         else:
             temp_bytes = bytes(temp_data)
         
+        # Little-Endian formatında dönüşüm
         pitot_speed = struct.unpack('<f', speed_bytes)[0]
-        temperature = struct.unpack('<H', temp_bytes)[0]
+        temperature = struct.unpack('<h', temp_bytes)[0]
+        temperature = temperature / 1000.0
         
         return {
             "pitot_speed": round(pitot_speed, 2),
             "temperature": temperature
         }
-    except Exception:
-        return {"pitot_speed": 0.0, "temperature": 0}
+    except Exception as e:
+        print(f"Hata yakalandı: {e}")
+        return {"pitot_speed": -1.0, "temperature": -1}
