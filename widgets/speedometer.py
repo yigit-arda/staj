@@ -139,7 +139,7 @@ class ProfessionalSpeedometer(QWidget):
                 span_remaining = current_span - warn_span
                 painter.drawArc(arc_rect, int(start_angle_warn * 16), int(span_remaining * 16))
 
-        # 4. ÇENTİKLER VE RAKAMLAR
+       
         painter.save()
         font = QFont("Segoe UI", 11, QFont.Weight.Bold)
         painter.setFont(font)
@@ -156,7 +156,6 @@ class ProfessionalSpeedometer(QWidget):
             painter.drawLine(int(radius - 15), 0, int(radius - 8), 0)
             painter.restore()
 
-        # Ana Çentikler (aralığı 5 eşit parçaya böl)
         num_main_ticks = 5
         for i in range(num_main_ticks + 1):
             tick_ratio = i / num_main_ticks
@@ -177,7 +176,7 @@ class ProfessionalSpeedometer(QWidget):
 
         painter.restore()
 
-        # 5. MAVİ İBRE
+        
         needle_angle = 135 + (ratio * 270)
 
         painter.save()
@@ -194,7 +193,7 @@ class ProfessionalSpeedometer(QWidget):
         painter.drawEllipse(QPointF(0, 0), 6, 6)
         painter.restore()
 
-        # 6. DİJİTAL MERKEZ DEĞERİ
+       
         if ratio <= self.warn_ratio:
             digi_color = QColor(235, 235, 235)
         else:
