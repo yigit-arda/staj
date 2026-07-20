@@ -6,6 +6,25 @@ All notable changes to the IVCANSniffer project are documented in this file.
 This project adheres to Semantic Versioning (v2.0.0).
 
 ------------------------------------------------------------------------
+[1.3.0] - 2026-07-20
+------------------------------------------------------------------------
+
+ADDED:
+* Servo Binary Parser: Implemented binary 'servo' function in functions.py 
+  to extract high-precision position, setpoint, servo status, and sensor 
+  status directly from binary telemetry frames.
+* Binary Struct Decoding: Utilized Python's 'struct' module to unpack 16-bit 
+  signed integers (<h) for scaled position/setpoint values and 8-bit unsigned 
+  integers (<B) for status flags.
+* New UI Gauge Blueprints: Added 'servoGauge_3' and 'servoGauge_4' (-15 to +15 
+  range) in indicators_config.py for detailed dual-gauge servo monitoring.
+
+CHANGED:
+* Telemetry Mapping: Updated 'indicatorsList' to map raw binary servo telemetry 
+  keys ('pos', 'setPt', 'servoStatus', 'sensorStatus') to their new gauges and 
+  text-only UI status displays.
+
+------------------------------------------------------------------------
 [1.2.0] - 2026-07-09
 ------------------------------------------------------------------------
 
