@@ -61,7 +61,7 @@ indicatorsList = [
     ["attitudeValues", "attitude",     artificial_horizon, "Artificial Horizon(pitch,roll)"],
     ["lidar_function","lidar_distance", lidar_alt_ind, "Lidar Alt(m)"],
     ["pitot_function","pitot_speed",pitot_speed_ind,  "Airspeed(m/s)"],
-    ["pitot_function","temperature", thermometer_ind, "Pitot Temp(°C)"]
+    ["pitot_function","temperature", thermometer_ind, "Pitot Temp(°C)"],
     ["servo"         ,"pos"          , servoGauge_3,   "Position:"],
     ["servo"         ,"setPt"          ,servoGauge_4,   "Setpoint:"],
     ["servo"         ,"servoStatus"          ,None,    "ServoStatus:"],
