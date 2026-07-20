@@ -110,7 +110,7 @@ class Ui_MainWindow(object):
         Args:
             MainWindow (QMainWindow): The main window instance containing the UI components.
         """
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"IVCANSniffer-v1.1.0", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"IVCANSniffer-v1.2.0", None))
         self.date.setText(QCoreApplication.translate("MainWindow", u"Date", None))
         self.Refresh.setText(QCoreApplication.translate("MainWindow", u"Refresh", None))
         self.start_stop.setText(QCoreApplication.translate("MainWindow", u"Start", None))
@@ -529,8 +529,8 @@ class TerminalApp(QMainWindow):
         if msg_id_str: 
             try:
                 msg_id_val = int(msg_id_str)
-                if not (0 <= msg_id_val <= 255):
-                    QMessageBox.warning(self, "Invalid MSG ID", "MSG ID must be between 0 and 255.")
+                if not (0 <= msg_id_val <= 1024):
+                    QMessageBox.warning(self, "Invalid MSG ID", "MSG ID must be between 0 and 1024.")
                     return 
             except ValueError:
                 QMessageBox.warning(self, "Invalid Input", "MSG ID must be a numeric value.")
@@ -652,6 +652,9 @@ class TerminalApp(QMainWindow):
     def parse_and_display(self, line):
         """Parses a single line of serial data, applies filters, and routes data for display.
 
+        Validates the payload to ensure all data bytes are within the physical 0-255 range 
+        before processing or logging. Corrupted packets are discarded.
+
         Args:
             line (str): Raw string received from the serial buffer.
         """
@@ -663,13 +666,41 @@ class TerminalApp(QMainWindow):
         length = len(parts)
 
         if length < 3: return
-        if(parts[0] != startString or parts[-1] != endString): return
+        if (parts[0] != startString or parts[-1] != endString): return
             
         current_node_id = self.convert_to_decimal(parts[1])
         current_msg_id = self.convert_to_decimal(parts[2])
 
         doesDataExist = length >= 5
-        data_list = parts[3:-1] if doesDataExist else []
+        data_list = []
+        
+        if doesDataExist:
+            raw_data_parts = parts[3:-1]
+            
+            # Validate each byte value to ensure data integrity
+            for item in raw_data_parts:
+                # Attempt to parse hexadecimal strings
+                if isinstance(item, str) and 'x' in item.lower():
+                    try:
+                        val = int(item, 16)
+                    except ValueError:
+                        val = -1
+                
+                # Attempt to parse standard decimal strings
+                else:
+                    try:
+                        val = int(item)
+                    except ValueError:
+                        val = -1
+                
+                # Reject the entire packet if any value is outside the valid byte range (0-255)
+                if val < 0 or val > 255:
+                    print(f"[DATA REJECTED] Corrupt value detected: {item}. Packet discarded.")
+                    return
+                
+                # Append the validated integer back as a string for downstream functions
+                data_list.append(str(val)) 
+                
         data_str = ", ".join(data_list) if doesDataExist else "NO DATA"
 
         is_filtered_out = False
