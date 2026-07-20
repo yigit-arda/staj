@@ -244,3 +244,60 @@ def pitot_function(data_list):
         # Log the exception for debugging instead of failing silently
         print(f"[WARNING] Corrupt Pitot Packet Discarded. Error: {e} | Data: {data_list}")
         return {"pitot_speed": 0.0, "temperature": 0}
+
+def servo(data_list):
+
+    if not data_list:
+        return {"pos": 0, "setPt": 0, "servoStatus": 0, "sensorStatus": 0}
+    
+    try:
+        # VALIDATION: Remove any empty or whitespace-only elements
+        clean_data = [x for x in data_list if str(x).strip() != '']
+        
+        if len(clean_data) < 8:
+            return {"pos": 0, "setPt": 0, "servoStatus": 0, "sensorStatus": 0}
+
+        pos_data = clean_data[2:4]
+        setpt_data = clean_data[4:6]
+        servostatus_data = clean_data[6:7]
+        sensorstatus_data = clean_data[7:8]
+        
+        if isinstance(pos_data[0], str):
+            pos_bytes = bytes([int(x, 16) if 'x' in x.lower() else int(x) for x in pos_data])
+        else:
+            pos_bytes = bytes(pos_data)
+
+        if isinstance(setpt_data[0], str):
+            setpt_bytes = bytes([int(x, 16) if 'x' in x.lower() else int(x) for x in setpt_data])
+        else:
+            setpt_bytes = bytes(setpt_data)
+
+        if isinstance(servostatus_data[0], str):
+            servostatus_bytes = bytes([int(x, 16) if 'x' in x.lower() else int(x) for x in servostatus_data])
+        else:
+            servostatus_bytes = bytes(servostatus_data)
+
+        if isinstance(sensorstatus_data[0], str):
+            sensorstatus_bytes = bytes([int(x, 16) if 'x' in x.lower() else int(x) for x in sensorstatus_data])
+        else:
+            sensorstatus_bytes = bytes(sensorstatus_data)
+        
+        pos = struct.unpack('<h', pos_bytes)[0]
+        pos = pos/1000.0
+
+        setPt = struct.unpack('<h', setpt_bytes)[0]
+        setPt = setPt/1000.0
+
+        servoStatus = struct.unpack('<B', servostatus_bytes)[0]
+        sensorStatus = struct.unpack('<B', sensorstatus_bytes)[0]
+
+        return {"pos": pos,
+                "setPt": setPt,
+                "servoStatus": servoStatus, 
+                "sensorStatus": sensorStatus}
+    
+    except Exception as e:
+        
+        # Log the exception for debugging instead of failing silently
+        print(f"[WARNING] Corrupt Servo Packet Discarded. Error: {e} | Data: {data_list}")
+        return {"pos": 0, "setPt": 0, "servoStatus": 0, "sensorStatus": 0}
