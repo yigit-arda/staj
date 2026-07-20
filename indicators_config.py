@@ -33,6 +33,8 @@ altitude_ind    = IndicatorWidget("altitude", 0, 3000)
 artificial_horizon = IndicatorWidget("artificial_horizon", 0, 30)
 lidar_alt_ind = IndicatorWidget("altitude",0,200)
 pitot_speed_ind = IndicatorWidget("speedometer",0,30)
+servoGauge_3    = IndicatorWidget("gauge", -15, +15)
+servoGauge_4    = IndicatorWidget("gauge", -15, +15)
 
 
 # Configuration mapping: [parser_function_name, output_key, widget_blueprint, ui_label]
@@ -60,6 +62,10 @@ indicatorsList = [
     ["lidar_function","lidar_distance", lidar_alt_ind, "Lidar Alt(m)"],
     ["pitot_function","pitot_speed",pitot_speed_ind,  "Airspeed(m/s)"],
     ["pitot_function","temperature", thermometer_ind, "Pitot Temp(°C)"]
+    ["servo"         ,"pos"          , servoGauge_3,   "Position:"],
+    ["servo"         ,"setPt"          ,servoGauge_4,   "Setpoint:"],
+    ["servo"         ,"servoStatus"          ,None,    "ServoStatus:"],
+    ["servo"         ,"sensorStatus"         ,None,   "SensorStatus:"]
 ]
 
 FUNCTION_DISPLAY_NAMES = {}
