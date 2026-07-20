@@ -184,7 +184,7 @@ def lidar_function(data_list):
         return {"lidar_distance": 0.0}
 
     try:
-        # GÜVENLİK DUVARI: İçinde değer olmayan ('') elemanları temizle
+        # VALIDATION: Remove any empty or whitespace-only elements
         clean_data = [x for x in data_list if str(x).strip() != '']
         
         if len(clean_data) < 4:
@@ -201,8 +201,8 @@ def lidar_function(data_list):
         return {"lidar_distance": round(distance, 2)}
     
     except Exception as e:
-        # Hatayı halının altına süpürmüyoruz, logluyoruz!
-        print(f"[UYARI] Lidar Bozuk Paket Çöpe Atıldı. Hata: {e} | Veri: {data_list}")
+        # Log the exception for debugging instead of failing silently
+        print(f"[WARNING] Corrupt Lidar Packet Discarded. Error: {e} | Data: {data_list}")
         return {"lidar_distance": 0.0}
 
 
@@ -212,7 +212,7 @@ def pitot_function(data_list):
         return {"pitot_speed": 0.0, "temperature": 0}
 
     try:
-        # GÜVENLİK DUVARI: Pitot için de eklendi!
+        # VALIDATION: Remove any empty or whitespace-only elements
         clean_data = [x for x in data_list if str(x).strip() != '']
         
         if len(clean_data) < 6:
@@ -241,6 +241,6 @@ def pitot_function(data_list):
         }
         
     except Exception as e:
-        # Hatayı halının altına süpürmüyoruz, logluyoruz!
-        print(f"[UYARI] Pitot Bozuk Paket Çöpe Atıldı. Hata: {e} | Veri: {data_list}")
+        # Log the exception for debugging instead of failing silently
+        print(f"[WARNING] Corrupt Pitot Packet Discarded. Error: {e} | Data: {data_list}")
         return {"pitot_speed": 0.0, "temperature": 0}
