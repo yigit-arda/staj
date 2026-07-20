@@ -1,4 +1,4 @@
-# IVCANSniffer v1.0.0
+# IVCANSniffer v1.3.0
 
 ![Python](https://img.shields.io/badge/Python-3.13-blue.svg)
 ![PySide6](https://img.shields.io/badge/PySide6-GUI-green.svg)
