@@ -110,7 +110,7 @@ class Ui_MainWindow(object):
         Args:
             MainWindow (QMainWindow): The main window instance containing the UI components.
         """
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"IVCANSniffer-v1.2.0", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"IVCANSniffer-v1.3.0", None))
         self.date.setText(QCoreApplication.translate("MainWindow", u"Date", None))
         self.Refresh.setText(QCoreApplication.translate("MainWindow", u"Refresh", None))
         self.start_stop.setText(QCoreApplication.translate("MainWindow", u"Start", None))
@@ -436,6 +436,7 @@ class TerminalApp(QMainWindow):
         timestamp = datetime.now().strftime('%H:%M:%S:%f')[:-3]
         data_str = ",".join(data_list) if data_list else "NO DATA"
         
+        
         log_line = f"{timestamp},{node_id},{msg_id},{data_str}\n"
         self.log_file.write(log_line)
         self.log_file.flush()
@@ -518,22 +519,24 @@ class TerminalApp(QMainWindow):
 
         if node_id_str: 
             try:
-                node_id_val = int(node_id_str)
+                node_id_val = self.parse_id_input(node_id_str)
                 if not (0 <= node_id_val <= 15):
                     QMessageBox.warning(self, "Invalid Node ID", "Node ID must be between 0 and 15.")
                     return 
+                node_id_str = str(node_id_val)
             except ValueError:
-                QMessageBox.warning(self, "Invalid Input", "Node ID must be a numeric value.")
+                QMessageBox.warning(self, "Invalid Input", "Node ID must be a valid numeric or hexadecimal (e.g., 0xA) value.")
                 return
 
         if msg_id_str: 
             try:
-                msg_id_val = int(msg_id_str)
+                msg_id_val = self.parse_id_input(msg_id_str)
                 if not (0 <= msg_id_val <= 1024):
                     QMessageBox.warning(self, "Invalid MSG ID", "MSG ID must be between 0 and 1024.")
                     return 
+                msg_id_str = str(msg_id_val)
             except ValueError:
-                QMessageBox.warning(self, "Invalid Input", "MSG ID must be a numeric value.")
+                QMessageBox.warning(self, "Invalid Input", "MSG ID must be a valid numeric or hexadecimal (e.g., 0x30) value.")
                 return
 
         for f_obj in self.active_filters:
@@ -567,6 +570,7 @@ class TerminalApp(QMainWindow):
 
         self.ui.le_node_id.clear()
         self.ui.le_msg_id.clear()
+
 
     def on_filter_changed(self, triggered_widget):
         """Handles the toggle event (active/inactive) for a specific filter.
@@ -747,6 +751,21 @@ class TerminalApp(QMainWindow):
             except ValueError:
                 return value_str
         return value_str
+    
+    def parse_id_input(self, value_str):
+        """
+        Converts the decimal or hex (0x30, x30) data entered by the user 
+        into integer format.
+        """
+        value_str = value_str.strip().lower()
+        
+        if value_str.startswith('x'):
+            value_str = '0' + value_str
+            
+        if value_str.startswith('0x'):
+            return int(value_str, 16)
+        else:
+            return int(value_str)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
